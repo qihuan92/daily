@@ -1,3 +1,4 @@
+import 'package:daily/model/DailyItem.dart';
 import 'package:flutter/material.dart';
 
 class DailyListPage extends StatefulWidget {
@@ -8,11 +9,12 @@ class DailyListPage extends StatefulWidget {
 }
 
 class _DailyListState extends State<DailyListPage> {
-  List stories;
+  List<DailyItem> stories;
 
   @override
   void initState() {
     super.initState();
+    getDailyList();
   }
 
   @override
@@ -27,5 +29,9 @@ class _DailyListState extends State<DailyListPage> {
       itemBuilder: (context, position) {},
     );
     return new RefreshIndicator(child: listView, onRefresh: () {});
+  }
+
+  void getDailyList() {
+
   }
 }
