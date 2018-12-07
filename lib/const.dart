@@ -1,0 +1,1 @@
+const app_name = '報紙';
