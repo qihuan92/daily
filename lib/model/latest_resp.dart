@@ -1,14 +1,15 @@
-import 'package:daily/model/DailyItem.dart';
+import 'package:daily/model/daily_item.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'LatestDailyResp.g.dart';
+part 'latest_resp.g.dart';
 
 @JsonSerializable()
 class LatestDailyResp {
-  List<DailyItem> top_stories;
+  @JsonKey(name: 'top_stories')
+  List<DailyItem> topStories;
   List<DailyItem> stories;
 
-  LatestDailyResp(this.top_stories, this.stories);
+  LatestDailyResp(this.topStories, this.stories);
 
   factory LatestDailyResp.fromJson(Map<String, dynamic> json) =>
       _$LatestDailyRespFromJson(json);

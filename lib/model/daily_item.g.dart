@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'DailyItem.dart';
+part of 'daily_item.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
