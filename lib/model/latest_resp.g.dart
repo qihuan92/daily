@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'LatestDailyResp.dart';
+part of 'latest_resp.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -20,6 +20,6 @@ LatestDailyResp _$LatestDailyRespFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$LatestDailyRespToJson(LatestDailyResp instance) =>
     <String, dynamic>{
-      'top_stories': instance.top_stories,
+      'top_stories': instance.topStories,
       'stories': instance.stories
     };

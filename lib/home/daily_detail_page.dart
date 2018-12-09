@@ -1,15 +1,19 @@
 import 'package:daily/const.dart';
-import 'package:daily/home/DailyListPage.dart';
+import 'package:daily/home/daily_list_page.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
+class DailyDetailPage extends StatefulWidget {
+  int id;
+
+  DailyDetailPage(this.id);
+
   @override
   State<StatefulWidget> createState() {
-    return _HomeState();
+    return _DailyDetailState();
   }
 }
 
-class _HomeState extends State<HomePage> {
+class _DailyDetailState extends State<DailyDetailPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,7 +23,6 @@ class _HomeState extends State<HomePage> {
       ),
       home: Scaffold(
         appBar: AppBar(title: Text(app_name)),
-        body: DailyListPage(),
       ),
     );
   }
