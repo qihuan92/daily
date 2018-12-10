@@ -50,7 +50,7 @@ class _DailyDetailState extends State<DailyDetailPage> {
     DailyDetail dailyDetail = await ApiManger.getInstance().detail(id);
     setState(() {
       title = dailyDetail.title;
-      shareUrl = dailyDetail.shareUrl;
+      shareUrl = dailyDetail.shareUrl.replaceFirst('http', 'https');
     });
   }
 }
