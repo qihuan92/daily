@@ -1,6 +1,8 @@
 import 'package:daily/home/daily_detail_page.dart';
+import 'package:daily/model/before_resp.dart';
 import 'package:daily/model/daily_item.dart';
 import 'package:daily/model/latest_resp.dart';
+import 'package:daily/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:daily/api/api_manager.dart';
 
@@ -13,6 +15,7 @@ class DailyListPage extends StatefulWidget {
 
 class _DailyListState extends State<DailyListPage> {
   List<DailyItem> stories;
+  DateTime date = DateTime.now();
 
   @override
   void initState() {
@@ -41,7 +44,20 @@ class _DailyListState extends State<DailyListPage> {
   void getDailyList() async {
     LatestDailyResp resp = await ApiManger.getInstance().latest();
     setState(() {
+      date = DateTime.now();
       stories = resp.stories;
+    });
+  }
+
+  void getBeforeList() async {
+    date = date.subtract(Duration(days: 1));
+    BeforeResp resp =
+        await ApiManger.getInstance().before(Utils.formatDate(date));
+
+    setState(() {
+      if (stories != null) {
+        stories.addAll(resp.stories);
+      }
     });
   }
 
@@ -60,12 +76,16 @@ class _DailyListState extends State<DailyListPage> {
               ),
             )),
         Expanded(
-            child: Padding(
-          padding: const EdgeInsets.only(top: 15.0, bottom: 15.0, right: 15.0),
-          child: Center(
-            child: Image.network(item.images[0]),
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 15.0, bottom: 15.0, right: 15.0),
+            child: Center(
+              child: Image.network(
+                item.images[0],
+              ),
+            ),
           ),
-        ))
+        )
       ],
     );
 

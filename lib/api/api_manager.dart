@@ -1,12 +1,16 @@
+import 'package:daily/model/before_resp.dart';
 import 'package:daily/model/daily_detail.dart';
 import 'package:daily/model/latest_resp.dart';
 import 'package:dio/dio.dart';
 
 class Api {
-  static const String baseUrl = "http://news-at.zhihu.com";
+  static const String baseUrl = "https://news-at.zhihu.com";
 
   // 今日热闻
   static const String latest = "/api/4/news/latest";
+
+  // 历史新闻
+  static const String before = "/api/4/news/before/";
 
   // 新闻详情
   static const String detail = "/api/4/news/";
@@ -45,5 +49,10 @@ class ApiManger {
   Future<DailyDetail> detail(int id) async {
     Response response = await _dio.get(Api.detail + id.toString());
     return DailyDetail.fromJson(response.data);
+  }
+
+  Future<BeforeResp> before(String date) async {
+    Response response = await _dio.get(Api.before + date);
+    return BeforeResp.fromJson(response.data);
   }
 }
