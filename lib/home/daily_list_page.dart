@@ -78,10 +78,9 @@ class _DailyListState extends State<DailyListPage> {
 
     return InkWell(
       onTap: () async {
-        await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => DailyDetailPage(
-                  item.id,
-                )));
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => DailyDetailPage(id: item.id)),
+        );
       },
       child: card,
     );
