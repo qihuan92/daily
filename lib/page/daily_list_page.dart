@@ -5,6 +5,7 @@ import 'package:daily/page/daily_detail_page.dart';
 import 'package:daily/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:daily/api/api_manager.dart';
+import "package:pull_to_refresh/pull_to_refresh.dart";
 
 class DailyListPage extends StatefulWidget {
   @override
@@ -16,6 +17,8 @@ class DailyListPage extends StatefulWidget {
 class _DailyListState extends State<DailyListPage> {
   List<DailyItem> stories;
   DateTime date = DateTime.now();
+
+  RefreshController _refreshController = RefreshController();
 
   @override
   void initState() {
@@ -38,14 +41,26 @@ class _DailyListState extends State<DailyListPage> {
             indent: 10,
           ),
     );
-    return RefreshIndicator(
-        child: listView,
-        onRefresh: () async {
-          return getDailyList();
-        });
+
+    return SmartRefresher(
+      child: listView,
+      controller: _refreshController,
+      enablePullUp: true,
+      onRefresh: (up) {
+        if (up) {
+          getDailyList().then((value) {
+            _refreshController.sendBack(up, RefreshStatus.idle);
+          });
+        } else {
+          getBeforeList().then((value) {
+            _refreshController.sendBack(up, RefreshStatus.idle);
+          });
+        }
+      },
+    );
   }
 
-  void getDailyList() async {
+  Future getDailyList() async {
     LatestDailyResp resp = await ApiManger.getInstance().latest();
     setState(() {
       date = DateTime.now();
@@ -53,7 +68,7 @@ class _DailyListState extends State<DailyListPage> {
     });
   }
 
-  void getBeforeList() async {
+  Future getBeforeList() async {
     date = date.subtract(Duration(days: 1));
     BeforeResp resp =
         await ApiManger.getInstance().before(Utils.formatDate(date));
@@ -67,7 +82,7 @@ class _DailyListState extends State<DailyListPage> {
 
   Widget renderRow(int position) {
     DailyItem item = stories[position];
-    var content = Row(
+    var itemContent = Row(
       children: <Widget>[
         Expanded(
             flex: 3,
@@ -100,7 +115,7 @@ class _DailyListState extends State<DailyListPage> {
           MaterialPageRoute(builder: (context) => DailyDetailPage(id: item.id)),
         );
       },
-      child: content,
+      child: itemContent,
     );
   }
 }
