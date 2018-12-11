@@ -7,6 +7,7 @@ import 'package:daily/widget/round_image.dart';
 import 'package:flutter/material.dart';
 import 'package:daily/api/api_manager.dart';
 import "package:pull_to_refresh/pull_to_refresh.dart";
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 class DailyListPage extends StatefulWidget {
   @override
@@ -36,7 +37,7 @@ class _DailyListState extends State<DailyListPage> {
     }
     Widget listView = ListView.separated(
       itemCount: itemList.length,
-      itemBuilder: (context, position) => renderRow(position),
+      itemBuilder: (context, index) => renderRow(index),
       separatorBuilder: (context, index) => Divider(
             height: 0,
             indent: 10,
@@ -59,6 +60,15 @@ class _DailyListState extends State<DailyListPage> {
         }
       },
     );
+
+    // return Swiper(
+    //   itemCount: 3,
+    //   itemBuilder: (context, index) => Image.network(
+    //         "http://via.placeholder.com/350x150",
+    //         fit: BoxFit.fill,
+    //       ),
+    //   pagination: SwiperPagination(),
+    // );
   }
 
   Future getDailyList() async {
@@ -66,6 +76,7 @@ class _DailyListState extends State<DailyListPage> {
     setState(() {
       date = DateTime.now();
       itemList.clear();
+      itemList.add(resp.topStories);
       itemList.addAll(resp.stories);
     });
   }
@@ -85,9 +96,7 @@ class _DailyListState extends State<DailyListPage> {
   Widget renderDailyItem(DailyItem item) {
     return InkWell(
       onTap: () async {
-        await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => DailyDetailPage(id: item.id)),
-        );
+        _goDetail(item);
       },
       child: Row(
         children: <Widget>[
@@ -120,6 +129,29 @@ class _DailyListState extends State<DailyListPage> {
     );
   }
 
+  void _goDetail(DailyItem item) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => DailyDetailPage(id: item.id)),
+    );
+  }
+
+  Widget renderBanner(List<DailyItem> itemList) {
+    return SizedBox(
+      height: 200.0,
+      child: Swiper(
+        itemCount: itemList.length,
+        itemBuilder: (context, index) => Image.network(
+              itemList[index].image,
+              fit: BoxFit.fill,
+            ),
+        pagination: SwiperPagination(),
+        onTap: (index) async {
+          _goDetail(itemList[index]);
+        },
+      ),
+    );
+  }
+
   Widget renderDateItem(String date) {
     date = Utils.formatData(date);
     return Container(
@@ -142,6 +174,9 @@ class _DailyListState extends State<DailyListPage> {
   Widget renderRow(int position) {
     var item = itemList[position];
     var itemContent;
+    if (item is List<DailyItem>) {
+      itemContent = renderBanner(item);
+    }
     if (item is DailyItem) {
       itemContent = renderDailyItem(item);
     }
