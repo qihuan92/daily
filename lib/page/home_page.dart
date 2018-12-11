@@ -1,5 +1,5 @@
 import 'package:daily/const.dart';
-import 'package:daily/home/daily_list_page.dart';
+import 'package:daily/page/daily_list_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
