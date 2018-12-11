@@ -1,7 +1,7 @@
-import 'package:daily/home/daily_detail_page.dart';
 import 'package:daily/model/before_resp.dart';
 import 'package:daily/model/daily_item.dart';
 import 'package:daily/model/latest_resp.dart';
+import 'package:daily/page/daily_detail_page.dart';
 import 'package:daily/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:daily/api/api_manager.dart';
@@ -30,9 +30,13 @@ class _DailyListState extends State<DailyListPage> {
         child: CircularProgressIndicator(),
       );
     }
-    Widget listView = ListView.builder(
+    Widget listView = ListView.separated(
       itemCount: stories.length,
       itemBuilder: (context, position) => renderRow(position),
+      separatorBuilder: (context, index) => Divider(
+            height: 0,
+            indent: 10,
+          ),
     );
     return RefreshIndicator(
         child: listView,
@@ -68,7 +72,7 @@ class _DailyListState extends State<DailyListPage> {
         Expanded(
             flex: 3,
             child: Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(10),
               child: Text(
                 item.title,
                 style:
@@ -77,23 +81,17 @@ class _DailyListState extends State<DailyListPage> {
             )),
         Expanded(
           child: Padding(
-            padding:
-                const EdgeInsets.only(top: 15.0, bottom: 15.0, right: 15.0),
+            padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
             child: Center(
               child: Image.network(
                 item.images[0],
+                width: 60,
+                height: 60,
               ),
             ),
           ),
         )
       ],
-    );
-
-    var card = Card(
-      elevation: 2.0,
-      margin:
-          const EdgeInsets.only(left: 12.0, top: 6.0, bottom: 6.0, right: 12.0),
-      child: content,
     );
 
     return InkWell(
@@ -102,7 +100,7 @@ class _DailyListState extends State<DailyListPage> {
           MaterialPageRoute(builder: (context) => DailyDetailPage(id: item.id)),
         );
       },
-      child: card,
+      child: content,
     );
   }
 }
