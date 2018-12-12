@@ -17,27 +17,27 @@ class DailyListPage extends StatefulWidget {
 }
 
 class _DailyListState extends State<DailyListPage> {
-  List itemList = List();
-  DateTime date = DateTime.now();
+  List _itemList = List();
+  DateTime _date = DateTime.now();
 
   RefreshController _refreshController = RefreshController();
 
   @override
   void initState() {
     super.initState();
-    getDailyList();
+    _getDailyList();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (itemList.length == 0) {
+    if (_itemList.length == 0) {
       return Center(
         child: CircularProgressIndicator(),
       );
     }
     Widget listView = ListView.separated(
-      itemCount: itemList.length,
-      itemBuilder: (context, index) => renderRow(index),
+      itemCount: _itemList.length,
+      itemBuilder: (context, index) => _renderRow(index),
       separatorBuilder: (context, index) => Divider(
             height: 0,
             indent: 10,
@@ -48,52 +48,42 @@ class _DailyListState extends State<DailyListPage> {
       child: listView,
       controller: _refreshController,
       enablePullUp: true,
-      onRefresh: (up) {
-        if (up) {
-          getDailyList().then((value) {
-            _refreshController.sendBack(up, RefreshStatus.idle);
-          });
-        } else {
-          getBeforeList().then((value) {
-            _refreshController.sendBack(up, RefreshStatus.idle);
-          });
-        }
-      },
+      onRefresh: (up) => _refreshListener(up),
     );
-
-    // return Swiper(
-    //   itemCount: 3,
-    //   itemBuilder: (context, index) => Image.network(
-    //         "http://via.placeholder.com/350x150",
-    //         fit: BoxFit.fill,
-    //       ),
-    //   pagination: SwiperPagination(),
-    // );
   }
 
-  Future getDailyList() async {
+  void _refreshListener(bool up) async {
+    if (up) {
+      await _getDailyList();
+    } else {
+      await _getBeforeList();
+    }
+    _refreshController.sendBack(up, RefreshStatus.idle);
+  }
+
+  Future _getDailyList() async {
     LatestDailyResp resp = await ApiManger.getInstance().latest();
     setState(() {
-      date = DateTime.now();
-      itemList.clear();
-      itemList.add(resp.topStories);
-      itemList.addAll(resp.stories);
+      _date = DateTime.now();
+      _itemList.clear();
+      _itemList.add(resp.topStories);
+      _itemList.addAll(resp.stories);
     });
   }
 
-  Future getBeforeList() async {
+  Future _getBeforeList() async {
     BeforeResp resp =
-        await ApiManger.getInstance().before(Utils.formatDate(date));
-    date = date.subtract(Duration(days: 1));
+        await ApiManger.getInstance().before(Utils.formatDate(_date));
+    _date = _date.subtract(Duration(days: 1));
     setState(() {
-      if (itemList != null) {
-        itemList.add(resp.date);
-        itemList.addAll(resp.stories);
+      if (_itemList != null) {
+        _itemList.add(resp.date);
+        _itemList.addAll(resp.stories);
       }
     });
   }
 
-  Widget renderDailyItem(DailyItem item) {
+  Widget _renderDailyItem(DailyItem item) {
     return InkWell(
       onTap: () async {
         _goDetail(item);
@@ -135,7 +125,7 @@ class _DailyListState extends State<DailyListPage> {
     );
   }
 
-  Widget renderBanner(List<DailyItem> itemList) {
+  Widget _renderBanner(List<DailyItem> itemList) {
     return SizedBox(
       height: 200.0,
       child: Swiper(
@@ -152,7 +142,7 @@ class _DailyListState extends State<DailyListPage> {
     );
   }
 
-  Widget renderDateItem(String date) {
+  Widget _renderDateItem(String date) {
     date = Utils.formatData(date);
     return Container(
       alignment: Alignment.center,
@@ -171,17 +161,17 @@ class _DailyListState extends State<DailyListPage> {
     );
   }
 
-  Widget renderRow(int position) {
-    var item = itemList[position];
+  Widget _renderRow(int position) {
+    var item = _itemList[position];
     var itemContent;
     if (item is List<DailyItem>) {
-      itemContent = renderBanner(item);
+      itemContent = _renderBanner(item);
     }
     if (item is DailyItem) {
-      itemContent = renderDailyItem(item);
+      itemContent = _renderDailyItem(item);
     }
     if (item is String) {
-      itemContent = renderDateItem(item);
+      itemContent = _renderDateItem(item);
     }
     return itemContent;
   }
