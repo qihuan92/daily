@@ -85,9 +85,7 @@ class _DailyListState extends State<DailyListPage> {
 
   Widget _renderDailyItem(DailyItem item) {
     return InkWell(
-      onTap: () async {
-        _goDetail(item);
-      },
+      onTap: () => _goDetail(item),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -135,9 +133,8 @@ class _DailyListState extends State<DailyListPage> {
               fit: BoxFit.fill,
             ),
         pagination: SwiperPagination(),
-        onTap: (index) async {
-          _goDetail(itemList[index]);
-        },
+        autoplay: true,
+        onTap: (index) => _goDetail(itemList[index]),
       ),
     );
   }
