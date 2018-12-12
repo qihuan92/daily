@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 
 class Utils {
   static const String _zhihuFormat = 'yyyyMMdd';
-  static const String _showFormat = 'yyyy年MM月dd日 E';
 
   static String formatDate(DateTime date) {
     return DateFormat(_zhihuFormat).format(date);
