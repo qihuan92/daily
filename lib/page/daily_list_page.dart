@@ -87,20 +87,22 @@ class _DailyListState extends State<DailyListPage> {
     return InkWell(
       onTap: () => _goDetail(item),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text(
-                  item.title,
-                  style: TextStyle(
-                    color: const Color(0xFF0a0a0a),
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                item.title,
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
                 ),
-              )),
+              ),
+            ),
+          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
@@ -128,14 +130,48 @@ class _DailyListState extends State<DailyListPage> {
       height: 200.0,
       child: Swiper(
         itemCount: itemList.length,
-        itemBuilder: (context, index) => Image.network(
-              itemList[index].image,
-              fit: BoxFit.fill,
-            ),
-        pagination: SwiperPagination(),
+        itemBuilder: (context, index) => _renderBannerItem(itemList[index]),
+        pagination: SwiperPagination(
+          margin: EdgeInsets.all(5),
+          builder: DotSwiperPaginationBuilder(
+            size: 6,
+            activeSize: 6,
+          ),
+        ),
         autoplay: true,
         onTap: (index) => _goDetail(itemList[index]),
       ),
+    );
+  }
+
+  Widget _renderBannerItem(DailyItem item) {
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Image.network(
+          item.image,
+          fit: BoxFit.fitWidth,
+        ),
+        Container(
+          alignment: Alignment.bottomLeft,
+          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 25),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              stops: [0, 0.5],
+              colors: [Colors.black, Colors.transparent],
+            ),
+          ),
+          child: Text(
+            item.title,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -143,7 +179,7 @@ class _DailyListState extends State<DailyListPage> {
     date = Utils.formatData(date);
     return Container(
       alignment: Alignment.center,
-      decoration: BoxDecoration(color: Colors.blue),
+      decoration: BoxDecoration(color: Theme.of(context).primaryColor),
       child: Padding(
         padding: EdgeInsets.all(10),
         child: Text(
