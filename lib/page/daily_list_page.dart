@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:daily/api/api_manager.dart';
 import "package:pull_to_refresh/pull_to_refresh.dart";
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class DailyListPage extends StatefulWidget {
   @override
@@ -148,8 +149,9 @@ class _DailyListState extends State<DailyListPage> {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        Image.network(
-          item.image,
+        FadeInImage.memoryNetwork(
+          image: item.image,
+          placeholder: kTransparentImage,
           fit: BoxFit.fitWidth,
         ),
         Container(
