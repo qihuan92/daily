@@ -1,5 +1,6 @@
 import 'package:daily/api/api_manager.dart';
 import 'package:daily/model/daily_detail.dart';
+import 'package:daily/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
@@ -15,8 +16,7 @@ class DailyDetailPage extends StatefulWidget {
 }
 
 class _DailyDetailState extends State<DailyDetailPage> {
-  String title = '';
-  String shareUrl = '';
+  DailyDetail _dailyDetail;
 
   @override
   void initState() {
@@ -30,27 +30,35 @@ class _DailyDetailState extends State<DailyDetailPage> {
   }
 
   Widget renderContent(BuildContext context) {
-    if (shareUrl.isEmpty) {
+    if (_dailyDetail == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(title)),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(),
+        body: _renderLoadingView(),
       );
     }
     return WebviewScaffold(
-      appBar: AppBar(title: Text(title)),
-      url: shareUrl,
+      appBar: AppBar(title: Text(_dailyDetail.title)),
+      url: Utils.loadHtmlWithCss(
+        headImg: _dailyDetail.image,
+        html: _dailyDetail.body,
+        cssUrlList: _dailyDetail.css,
+      ),
       withJavascript: true,
       clearCache: true,
+      initialChild: _renderLoadingView(),
+    );
+  }
+
+  Widget _renderLoadingView() {
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
 
   void getDetail(int id) async {
     DailyDetail dailyDetail = await ApiManger.getInstance().detail(id);
     setState(() {
-      title = dailyDetail.title;
-      shareUrl = dailyDetail.shareUrl.replaceFirst('http', 'https');
+      _dailyDetail = dailyDetail;
     });
   }
 }

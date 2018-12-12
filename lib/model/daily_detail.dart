@@ -11,10 +11,17 @@ class DailyDetail {
   @JsonKey(name: 'share_url')
   String shareUrl;
 
+  String image;
+
   @JsonKey(name: 'image_source')
   String imageSource;
 
-  DailyDetail(this.id, this.title, this.shareUrl, this.imageSource);
+  String body;
+
+  List<String> css;
+
+  DailyDetail(this.id, this.title, this.shareUrl, this.image, this.imageSource,
+      this.body, this.css);
 
   factory DailyDetail.fromJson(Map<String, dynamic> json) =>
       _$DailyDetailFromJson(json);
