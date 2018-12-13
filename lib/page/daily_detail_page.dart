@@ -1,6 +1,5 @@
 import 'package:daily/api/api_manager.dart';
 import 'package:daily/model/daily_detail.dart';
-import 'package:daily/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
@@ -36,13 +35,10 @@ class _DailyDetailState extends State<DailyDetailPage> {
         body: _renderLoadingView(),
       );
     }
+
     return WebviewScaffold(
       appBar: AppBar(title: Text(_dailyDetail.title)),
-      url: Utils.loadHtmlWithCss(
-        headImg: _dailyDetail.image,
-        html: _dailyDetail.body,
-        cssUrlList: _dailyDetail.css,
-      ),
+      url: _dailyDetail.shareUrl,
       withJavascript: true,
       clearCache: true,
       initialChild: _renderLoadingView(),
