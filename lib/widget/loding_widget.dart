@@ -16,7 +16,7 @@ class LoadingFooterWidget extends StatelessWidget {
       refreshingText: '加载中...',
       refreshingIcon: SpinKitFadingFour(
         color: Theme.of(context).primaryColor,
-        size: 20,
+        size: 18,
       ),
       failedText: '加载失败',
       failedIcon: Icon(Icons.error, color: Colors.black38),
@@ -52,7 +52,7 @@ class LoadingHeaderWidget extends StatelessWidget {
       refreshingText: '加载中...',
       refreshingIcon: SpinKitFadingFour(
         color: Theme.of(context).primaryColor,
-        size: 20,
+        size: 18,
       ),
       failedText: '加载失败',
       failedIcon: Icon(Icons.error, color: Colors.black38),
