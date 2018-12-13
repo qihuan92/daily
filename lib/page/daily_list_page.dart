@@ -3,6 +3,7 @@ import 'package:daily/model/daily_item.dart';
 import 'package:daily/model/latest_resp.dart';
 import 'package:daily/page/daily_detail_page.dart';
 import 'package:daily/utils.dart';
+import 'package:daily/widget/loding_widget.dart';
 import 'package:daily/widget/round_image.dart';
 import 'package:flutter/material.dart';
 import 'package:daily/api/api_manager.dart';
@@ -47,6 +48,8 @@ class _DailyListState extends State<DailyListPage> {
 
     return SmartRefresher(
       child: listView,
+      headerBuilder: (context, mode) => LoadingHeaderWidget(mode),
+      footerBuilder: (context, mode) => LoadingFooterWidget(mode),
       controller: _refreshController,
       enablePullUp: true,
       onRefresh: (up) => _refreshListener(up),
