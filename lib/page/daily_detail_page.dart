@@ -38,7 +38,7 @@ class _DailyDetailState extends State<DailyDetailPage> {
 
     return WebviewScaffold(
       appBar: AppBar(title: Text(_dailyDetail.title)),
-      url: _dailyDetail.shareUrl,
+      url: _dailyDetail.shareUrl.replaceFirst('http', 'https'),
       withJavascript: true,
       clearCache: true,
       initialChild: _renderLoadingView(),
