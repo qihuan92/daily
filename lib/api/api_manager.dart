@@ -1,3 +1,4 @@
+import 'package:daily/model/base_model.dart';
 import 'package:daily/model/before_resp.dart';
 import 'package:daily/model/daily_detail.dart';
 import 'package:daily/model/latest_resp.dart';
@@ -22,6 +23,10 @@ class Api {
   static const String themeList = "/api/4/themes";
 }
 
+/// 数据转换
+typedef DataConverter<T> = T Function(dynamic json);
+
+/// 网络请求管理
 class ApiManger {
   static ApiManger instance;
   Dio _dio;
@@ -41,18 +46,50 @@ class ApiManger {
     return instance;
   }
 
-  Future<LatestDailyResp> latest() async {
-    Response response = await _dio.get(Api.latest);
-    return LatestDailyResp.fromJson(response.data);
+  /// 统一 GET 请求
+  Future<BaseResp<T>> _get<T>(String url, {DataConverter converter}) async {
+    BaseResp<T> resp = BaseResp();
+    try {
+      Response ogResp = await _dio.get(url);
+      resp.data = converter(ogResp.data);
+    } on DioError catch (e) {
+      resp.code = RespCode.error;
+      switch (e.type) {
+        case DioErrorType.DEFAULT:
+          resp.msg = '网络异常';
+          break;
+        case DioErrorType.CONNECT_TIMEOUT:
+        case DioErrorType.RECEIVE_TIMEOUT:
+          resp.msg = '请求超时';
+          break;
+        default:
+          resp.msg = '网络错误(${e.message})';
+      }
+    }
+    return resp;
   }
 
-  Future<DailyDetail> detail(int id) async {
-    Response response = await _dio.get(Api.detail + id.toString());
-    return DailyDetail.fromJson(response.data);
+  /// 获取最近日报
+  Future<BaseResp<LatestDailyResp>> latest() async {
+    return await _get<LatestDailyResp>(
+      '/api/4/news/latest',
+      converter: (json) => LatestDailyResp.fromJson(json),
+    );
   }
 
-  Future<BeforeResp> before(String date) async {
-    Response response = await _dio.get(Api.before + date);
-    return BeforeResp.fromJson(response.data);
+  /// 获取历史日报
+  Future<BaseResp<BeforeResp>> before(String date) async {
+    return await _get<BeforeResp>(
+      "/api/4/news/before/$date",
+      converter: (json) => BeforeResp.fromJson(json),
+    );
+  }
+
+  /// 日报详情
+  Future<BaseResp<DailyDetail>> detail(int id) async {
+    return await _get<DailyDetail>(
+      "/api/4/news/$id",
+      converter: (json) => DailyDetail.fromJson(json),
+    );
   }
 }

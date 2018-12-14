@@ -1,3 +1,4 @@
+import 'package:daily/model/base_model.dart';
 import 'package:daily/model/before_resp.dart';
 import 'package:daily/model/daily_item.dart';
 import 'package:daily/model/latest_resp.dart';
@@ -21,6 +22,9 @@ class DailyListPage extends StatefulWidget {
 class _DailyListState extends State<DailyListPage> {
   List _itemList = List();
   DateTime _date = DateTime.now();
+  bool _isLoading = true;
+  bool _showError = false;
+  String _errorMsg = '';
 
   RefreshController _refreshController = RefreshController();
 
@@ -32,59 +36,95 @@ class _DailyListState extends State<DailyListPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_itemList.length == 0) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
+    if (_isLoading) {
+      return _renderLoadingView();
     }
-    Widget listView = ListView.separated(
-      itemCount: _itemList.length,
-      itemBuilder: (context, index) => _renderRow(index),
-      separatorBuilder: (context, index) => Divider(
-            height: 0,
-            indent: 10,
-          ),
-    );
-
+    if (_showError) {
+      return _renderErrorView();
+    }
     return SmartRefresher(
-      child: listView,
+      child: ListView.separated(
+        itemCount: _itemList.length,
+        itemBuilder: (context, index) => _renderRow(index),
+        separatorBuilder: (context, index) => Divider(height: 0, indent: 10),
+      ),
       headerBuilder: (context, mode) => LoadingHeaderWidget(mode),
       footerBuilder: (context, mode) => LoadingFooterWidget(mode),
       controller: _refreshController,
       enablePullUp: true,
-      onRefresh: (up) => _refreshListener(up),
+      onRefresh: (up) {
+        if (up) {
+          _getDailyList(manual: true);
+        } else {
+          _getBeforeList();
+        }
+      },
     );
   }
 
-  void _refreshListener(bool up) async {
-    if (up) {
-      await _getDailyList();
-    } else {
-      await _getBeforeList();
+  void _getDailyList({bool manual = false}) async {
+    BaseResp<LatestDailyResp> resp = await ApiManger.getInstance().latest();
+    if (manual) {
+      _refreshController.sendBack(true, RefreshStatus.completed);
     }
-    _refreshController.sendBack(up, RefreshStatus.idle);
-  }
-
-  Future _getDailyList() async {
-    LatestDailyResp resp = await ApiManger.getInstance().latest();
     setState(() {
+      _isLoading = false;
       _date = DateTime.now();
       _itemList.clear();
-      _itemList.add(resp.topStories);
-      _itemList.addAll(resp.stories);
+      _showError = !resp.success();
+      if (resp.success()) {
+        _itemList.add(resp.data.topStories);
+        _itemList.addAll(resp.data.stories);
+      } else {
+        _errorMsg = resp.msg;
+      }
     });
   }
 
-  Future _getBeforeList() async {
-    BeforeResp resp =
+  void _getBeforeList() async {
+    BaseResp<BeforeResp> resp =
         await ApiManger.getInstance().before(Utils.formatDate(_date));
     _date = _date.subtract(Duration(days: 1));
+    _refreshController.sendBack(false, RefreshStatus.idle);
     setState(() {
       if (_itemList != null) {
-        _itemList.add(resp.date);
-        _itemList.addAll(resp.stories);
+        _itemList.add(resp.data.date);
+        _itemList.addAll(resp.data.stories);
       }
     });
+  }
+
+  Widget _renderLoadingView() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _renderErrorView() {
+    return InkWell(
+        onTap: () => _getDailyList(),
+        child: SizedBox.expand(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.error,
+                size: 50,
+                color: Colors.black45,
+              ),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  _errorMsg,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black45,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 
   Widget _renderDailyItem(DailyItem item) {
