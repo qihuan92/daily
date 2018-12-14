@@ -21,9 +21,11 @@ class LoadingFooterWidget extends StatelessWidget {
       failedText: '加载失败',
       failedIcon: Icon(Icons.error, color: Colors.black38),
       completeText: '加载完成',
-      completeIcon: Container(),
+      completeIcon: Icon(Icons.sentiment_satisfied,
+          color: Theme.of(context).primaryColor),
       noDataText: '没有更多数据',
-      noMoreIcon: Container(),
+      noMoreIcon:
+          Icon(Icons.sentiment_neutral, color: Theme.of(context).primaryColor),
     );
   }
 }
@@ -57,7 +59,10 @@ class LoadingHeaderWidget extends StatelessWidget {
       failedText: '加载失败',
       failedIcon: Icon(Icons.error, color: Colors.black38),
       completeText: '加载完成',
-      completeIcon: Container(),
+      completeIcon: Icon(
+        Icons.sentiment_satisfied,
+        color: Theme.of(context).primaryColor,
+      ),
       noDataText: '没有更多数据',
       noMoreIcon: Container(),
     );

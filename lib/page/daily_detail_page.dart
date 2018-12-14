@@ -1,7 +1,9 @@
 import 'package:daily/api/api_manager.dart';
+import 'package:daily/model/base_model.dart';
 import 'package:daily/model/daily_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class DailyDetailPage extends StatefulWidget {
   final int id;
@@ -25,36 +27,41 @@ class _DailyDetailState extends State<DailyDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return renderContent(context);
+    if (_dailyDetail == null) {
+      return _renderLoadingView();
+    }
+    return _renderContent(context);
   }
 
-  Widget renderContent(BuildContext context) {
-    if (_dailyDetail == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: _renderLoadingView(),
-      );
-    }
+  Widget _renderLoadingView() {
+    return Scaffold(
+      appBar: AppBar(),
+      body: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
 
+  Widget _renderContent(BuildContext context) {
     return WebviewScaffold(
       appBar: AppBar(title: Text(_dailyDetail.title)),
       url: _dailyDetail.shareUrl.replaceFirst('http', 'https'),
       withJavascript: true,
       clearCache: true,
-      initialChild: _renderLoadingView(),
-    );
-  }
-
-  Widget _renderLoadingView() {
-    return Center(
-      child: CircularProgressIndicator(),
+      initialChild: const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 
   void getDetail(int id) async {
-    DailyDetail dailyDetail = await ApiManger.getInstance().detail(id);
+    BaseResp<DailyDetail> resp = await ApiManger.getInstance().detail(id);
     setState(() {
-      _dailyDetail = dailyDetail;
+      if (!resp.success()) {
+        Fluttertoast.showToast(msg: resp.msg);
+        return;
+      }
+      _dailyDetail = resp.data;
     });
   }
 }
