@@ -55,7 +55,7 @@ class _DailyDetailState extends State<DailyDetailPage> {
   }
 
   void getDetail(int id) async {
-    BaseResp<DailyDetail> resp = await ApiManger.getInstance().detail(id);
+    BaseResp<DailyDetail> resp = await ApiManger().detail(id);
     setState(() {
       if (!resp.success()) {
         Fluttertoast.showToast(msg: resp.msg);
