@@ -13,10 +13,10 @@ typedef DataConverter<T> = T Function(dynamic json);
 
 /// 网络请求管理
 class ApiManger {
-  static ApiManger instance;
+  static final ApiManger _instance = ApiManger._internal();
   Dio _dio;
 
-  ApiManger() {
+  ApiManger._internal() {
     _dio = Dio(Options(
       baseUrl: Api.baseUrl,
       connectTimeout: 5000,
@@ -24,11 +24,8 @@ class ApiManger {
     ));
   }
 
-  static ApiManger getInstance() {
-    if (instance == null) {
-      instance = new ApiManger();
-    }
-    return instance;
+  factory ApiManger() {
+    return _instance;
   }
 
   /// 统一 GET 请求

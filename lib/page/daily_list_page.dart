@@ -63,7 +63,7 @@ class _DailyListState extends State<DailyListPage> {
   }
 
   void _getDailyList({bool manual = false}) async {
-    BaseResp<LatestDailyResp> resp = await ApiManger.getInstance().latest();
+    BaseResp<LatestDailyResp> resp = await ApiManger().latest();
     if (manual) {
       _refreshController.sendBack(true, RefreshStatus.completed);
     }
@@ -83,7 +83,7 @@ class _DailyListState extends State<DailyListPage> {
 
   void _getBeforeList() async {
     BaseResp<BeforeResp> resp =
-        await ApiManger.getInstance().before(Utils.formatDate(_date));
+        await ApiManger().before(Utils.formatDate(_date));
     _date = _date.subtract(Duration(days: 1));
     _refreshController.sendBack(false, RefreshStatus.idle);
     setState(() {
